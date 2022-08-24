@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>decentralized_path_auction_python</name>
+  <version>0.0.0</version>
+  <description>Python Bindings for Decentralized Path Auction</description>
+  <maintainer email="wzli@rapyuta-robotics.com">WenZheng Li</maintainer>
+  <license>Commercial</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>pybind11_catkin</depend>
+  <depend>decentralized_path_auction</depend>
+
+</package>
