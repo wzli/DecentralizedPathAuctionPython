@@ -33,4 +33,6 @@ install(TARGETS bindings
         DESTINATION "${PYTHON_INSTALL_DIR}/${PROJECT_NAME}"
         )
 
-
+if (CATKIN_ENABLE_TESTING)
+      catkin_add_nosetests(test)
+endif()
