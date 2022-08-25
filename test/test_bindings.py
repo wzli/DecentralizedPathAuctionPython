@@ -39,5 +39,27 @@ def test_graph():
         assert(graph.removeNode(pos))
         assert(not graph.findNode(pos))
 
+
+def test_path_search():
+    graph = Graph()
+    nodes = [graph.insertNode(Point(0,0,0))]
+    for i in range(1, 10):
+        pos = Point(i, 0,0)
+        node = graph.insertNode(pos)
+        assert(node)
+        nodes[-1].edges.append(node)
+        node.edges.append(nodes[-1])
+        nodes.append(node)
+
+    config = PathSearch.Config("A")
+    path_search = PathSearch(config)
+    assert(path_search.getConfig().agent_id == config.agent_id)
+    assert(path_search.setDestinations(Nodes([nodes[7]])) == PathSearch.Error.SUCCESS)
+    assert(path_search.getDestinations().containsNode(nodes[7]))
+
+    path = Path([Visit(nodes[3])])
+    assert(path_search.iterate(path, 100) == PathSearch.Error.SUCCESS);
+    assert([visit.node.position.x for visit in path] == list(range(3, 8)))
+
     #print("", file=sys.stderr)
     #print(node.position.tup(), node.state, file=sys.stderr)
