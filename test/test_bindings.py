@@ -84,15 +84,15 @@ def test_path_sync():
     assert path_sync.updatePath("A", path_a, path_id=0) == PathSync.Error.SUCCESS
     assert path_sync.updatePath("B", path_b, path_id=0) == PathSync.Error.SUCCESS
     assert (
-        path_sync.updateProgress("A", progress=2, target=3, path_id=0)
+        path_sync.updateProgress("A", progress_min=2, progress_max=3, path_id=0)
         == PathSync.Error.SUCCESS
     )
     info_a = path_sync.getPaths()["A"]
-    assert info_a.progress == 2
-    assert info_a.target == 3
+    assert info_a.progress_min == 2
+    assert info_a.progress_max == 3
     info_b = path_sync.getPaths()["B"]
-    assert info_b.progress == 0
-    assert info_b.target == 0
+    assert info_b.progress_min == 0
+    assert info_b.progress_max == 0
     wait_a = path_sync.checkWaitStatus("A")
     assert wait_a.error == PathSync.Error.SUCCESS
     assert wait_a.blocked_progress == 6

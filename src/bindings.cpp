@@ -160,18 +160,16 @@ PYBIND11_MODULE(bindings, dpa) {
             .value("AGENT_ID_NOT_FOUND", PathSync::AGENT_ID_NOT_FOUND)
             .value("PROGRESS_DECREASE_DENIED", PathSync::PROGRESS_DECREASE_DENIED)
             .value("PROGRESS_EXCEED_PATH_SIZE", PathSync::PROGRESS_EXCEED_PATH_SIZE)
-            .value("TARGET_BELOW_PROGRESS", PathSync::TARGET_BELOW_PROGRESS)
-            .value("TARGET_DECREASE_DENIED", PathSync::TARGET_DECREASE_DENIED)
-            .value("TARGET_EXCEED_PATH_SIZE", PathSync::TARGET_EXCEED_PATH_SIZE)
+            .value("PROGRESS_MIN_EXCEED_MAX", PathSync::PROGRESS_MIN_EXCEED_MAX)
             .export_values();
 
     py::class_<PathSync::PathInfo>(path_sync, "PathInfo")
             .def_readwrite("path", &PathSync::PathInfo::path)
             .def_readwrite("path_id", &PathSync::PathInfo::path_id)
-            .def_readwrite("progress", &PathSync::PathInfo::progress)
-            .def_readwrite("target", &PathSync::PathInfo::target)
+            .def_readwrite("progress_min", &PathSync::PathInfo::progress_min)
+            .def_readwrite("progress_max", &PathSync::PathInfo::progress_max)
             .def(py::init<Path, size_t, size_t, size_t>(), "path"_a, "path_id"_a = 0,
-                    "progress"_a = 0, "target"_a = 0);
+                    "progress_min"_a = 0, "progress_max"_a = 0);
 
     py::class_<PathSync::WaitStatus>(path_sync, "WaitStatus")
             .def_readwrite("error", &PathSync::WaitStatus::error)
@@ -182,8 +180,8 @@ PYBIND11_MODULE(bindings, dpa) {
 
     path_sync.def(py::init<>());
     path_sync.def("updatePath", &PathSync::updatePath, "agent_id"_a, "path"_a, "path_id"_a);
-    path_sync.def("updateProgress", &PathSync::updateProgress, "agent_id"_a, "progress"_a,
-            "target"_a, "path_id"_a);
+    path_sync.def("updateProgress", &PathSync::updateProgress, "agent_id"_a, "progress_min"_a,
+            "progress_max"_a, "path_id"_a);
     path_sync.def("removePath", &PathSync::removePath, "agent_id"_a);
     path_sync.def("clearPaths", &PathSync::clearPaths);
     path_sync.def("getPaths", &PathSync::getPaths);
