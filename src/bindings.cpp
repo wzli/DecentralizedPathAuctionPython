@@ -1,5 +1,6 @@
 #include <decentralized_path_auction/graph.hpp>
 #include <decentralized_path_auction/path_search.hpp>
+#include <decentralized_path_auction/path_sync.hpp>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
@@ -11,10 +12,12 @@ using namespace decentralized_path_auction;
 
 PYBIND11_MAKE_OPAQUE(Nodes);
 PYBIND11_MAKE_OPAQUE(Path);
+PYBIND11_MAKE_OPAQUE(PathSync::Paths);
 
 PYBIND11_MODULE(bindings, dpa) {
     py::bind_vector<Nodes>(dpa, "Nodes");
     py::bind_vector<Path>(dpa, "Path");
+    py::bind_map<PathSync::Paths>(dpa, "Paths");
 
     // Point
     py::class_<Point> point(dpa, "Point");
@@ -132,4 +135,57 @@ PYBIND11_MODULE(bindings, dpa) {
                     &PathSearch::iterate),
             "path"_a, "iterations"_a, "fallback_cost"_a);
     path_search.def("resetCostEstimates", &PathSearch::resetCostEstimates);
+
+    // PathSync
+    py::class_<PathSync> path_sync(dpa, "PathSync");
+
+    py::enum_<PathSync::Error>(path_sync, "Error")
+            .value("SUCCESS", PathSync::SUCCESS)
+            .value("REMAINING_DURATION_INFINITE", PathSync::REMAINING_DURATION_INFINITE)
+            .value("SOURCE_NODE_OUTBID", PathSync::SOURCE_NODE_OUTBID)
+            .value("DESTINATION_NODE_NO_PARKING", PathSync::DESTINATION_NODE_NO_PARKING)
+            .value("VISIT_NODE_INVALID", PathSync::VISIT_NODE_INVALID)
+            .value("VISIT_NODE_DISABLED", PathSync::VISIT_NODE_DISABLED)
+            .value("VISIT_DURATION_NEGATIVE", PathSync::VISIT_DURATION_NEGATIVE)
+            .value("VISIT_PRICE_ALREADY_EXIST", PathSync::VISIT_PRICE_ALREADY_EXIST)
+            .value("VISIT_PRICE_LESS_THAN_START_PRICE",
+                    PathSync::VISIT_PRICE_LESS_THAN_START_PRICE)
+            .value("VISIT_BID_ALREADY_REMOVED", PathSync::VISIT_BID_ALREADY_REMOVED)
+            .value("PATH_EMPTY", PathSync::PATH_EMPTY)
+            .value("PATH_VISIT_DUPLICATED", PathSync::PATH_VISIT_DUPLICATED)
+            .value("PATH_CAUSES_CYCLE", PathSync::PATH_CAUSES_CYCLE)
+            .value("PATH_ID_STALE", PathSync::PATH_ID_STALE)
+            .value("PATH_ID_MISMATCH", PathSync::PATH_ID_MISMATCH)
+            .value("AGENT_ID_EMPTY", PathSync::AGENT_ID_EMPTY)
+            .value("AGENT_ID_NOT_FOUND", PathSync::AGENT_ID_NOT_FOUND)
+            .value("PROGRESS_DECREASE_DENIED", PathSync::PROGRESS_DECREASE_DENIED)
+            .value("PROGRESS_EXCEED_PATH_SIZE", PathSync::PROGRESS_EXCEED_PATH_SIZE)
+            .value("TARGET_BELOW_PROGRESS", PathSync::TARGET_BELOW_PROGRESS)
+            .value("TARGET_DECREASE_DENIED", PathSync::TARGET_DECREASE_DENIED)
+            .value("TARGET_EXCEED_PATH_SIZE", PathSync::TARGET_EXCEED_PATH_SIZE)
+            .export_values();
+
+    py::class_<PathSync::PathInfo>(path_sync, "PathInfo")
+            .def_readwrite("path", &PathSync::PathInfo::path)
+            .def_readwrite("path_id", &PathSync::PathInfo::path_id)
+            .def_readwrite("progress", &PathSync::PathInfo::progress)
+            .def_readwrite("target", &PathSync::PathInfo::target)
+            .def(py::init<Path, size_t, size_t, size_t>(), "path"_a, "path_id"_a = 0,
+                    "progress"_a = 0, "target"_a = 0);
+
+    py::class_<PathSync::WaitStatus>(path_sync, "WaitStatus")
+            .def_readwrite("error", &PathSync::WaitStatus::error)
+            .def_readwrite("blocked_progress", &PathSync::WaitStatus::blocked_progress)
+            .def_readwrite("remaining_duration", &PathSync::WaitStatus::remaining_duration)
+            .def(py::init<PathSync::Error, size_t, float>(), "error"_a, "blocked_progress"_a,
+                    "remaining_duration"_a);
+
+    path_sync.def(py::init<>());
+    path_sync.def("updatePath", &PathSync::updatePath, "agent_id"_a, "path"_a, "path_id"_a);
+    path_sync.def("updateProgress", &PathSync::updateProgress, "agent_id"_a, "progress"_a,
+            "target"_a, "path_id"_a);
+    path_sync.def("removePath", &PathSync::removePath, "agent_id"_a);
+    path_sync.def("clearPaths", &PathSync::clearPaths);
+    path_sync.def("getPaths", &PathSync::getPaths);
+    path_sync.def("checkWaitStatus", &PathSync::checkWaitStatus, "agent_id"_a);
 }
