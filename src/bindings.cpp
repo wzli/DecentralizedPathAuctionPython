@@ -120,8 +120,8 @@ PYBIND11_MODULE(bindings, dpa) {
             .def("validate", &PathSearch::Config::validate);
 
     path_search.def(py::init<PathSearch::Config>(), "config"_a);
-    path_search.def("getConfig",
-            static_cast<PathSearch::Config& (PathSearch::*) ()>(&PathSearch::getConfig));
+    path_search.def("getConfig", static_cast<PathSearch::Config& (PathSearch::*) ()>(&PathSearch::getConfig),
+            py::return_value_policy::reference);
 
     path_search.def("getDestinations", &PathSearch::getDestinations);
     path_search.def("setDestinations", &PathSearch::setDestinations, "destinations"_a,
@@ -185,6 +185,6 @@ PYBIND11_MODULE(bindings, dpa) {
             "progress_max"_a, "path_id"_a);
     path_sync.def("removePath", &PathSync::removePath, "agent_id"_a);
     path_sync.def("clearPaths", &PathSync::clearPaths);
-    path_sync.def("getPaths", &PathSync::getPaths);
+    path_sync.def("getPaths", &PathSync::getPaths, py::return_value_policy::reference);
     path_sync.def("checkWaitStatus", &PathSync::checkWaitStatus, "agent_id"_a);
 }
