@@ -58,6 +58,8 @@ def test_path_search():
 
     config = PathSearch.Config("A")
     path_search = PathSearch(config)
+    path_search.getConfig().price_increment = 2
+    assert path_search.getConfig().price_increment == 2
     assert path_search.getConfig().agent_id == config.agent_id
     assert path_search.setDestinations(Nodes([nodes[7]])) == PathSearch.Error.SUCCESS
     assert path_search.getDestinations().containsNode(nodes[7])

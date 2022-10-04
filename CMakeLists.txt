@@ -29,10 +29,12 @@ set_target_properties(bindings
         PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION}
         )
 
-install(TARGETS bindings
-        DESTINATION "${PYTHON_INSTALL_DIR}/${PROJECT_NAME}"
-        )
+# catkin_lint fails to parse the target defined inside pybind11_add_module
+if (1) #catkin_lint: skip
+install(TARGETS bindings DESTINATION "${PYTHON_INSTALL_DIR}/${PROJECT_NAME}")
+endif()
 
 if (CATKIN_ENABLE_TESTING)
       catkin_add_nosetests(test)
 endif()
+
