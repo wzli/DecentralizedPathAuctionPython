@@ -33,6 +33,7 @@ PYBIND11_MODULE(bindings, dpa) {
     py::class_<Node, NodePtr> node(dpa, "Node");
     py::enum_<Node::State> state(node, "State");
     state.value("DEFAULT", Node::DEFAULT);
+    state.value("NO_FALLBACK", Node::NO_FALLBACK);
     state.value("NO_PARKING", Node::NO_PARKING);
     state.value("NO_STOPPING", Node::NO_STOPPING);
     state.value("DISABLED", Node::DISABLED);
