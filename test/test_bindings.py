@@ -36,10 +36,7 @@ def test_graph():
         assert graph.findNode(pos).position.tup() == pos.tup()
 
         pos_offset = Point(i, 10, 0)
-        assert (
-            graph.findNearestNode(pos_offset, Node.State.DEFAULT).position.tup()
-            == pos.tup()
-        )
+        assert graph.findNearestNode(pos_offset, Node.State.DEFAULT).position.tup() == pos.tup()
 
         assert graph.removeNode(pos)
         assert not graph.findNode(pos)
@@ -101,6 +98,9 @@ def test_path_sync():
     wait_b = path_sync.checkWaitStatus("B")
     assert wait_b.error == PathSync.Error.SUCCESS
     assert wait_b.blocked_progress == 4
+
+    print(path_sync)
+    assert False
 
     assert path_sync.removePath("A") == PathSync.Error.SUCCESS
     assert len(path_sync.getPaths()) == 1
